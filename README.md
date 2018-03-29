@@ -1,5 +1,9 @@
 # Spotify-Go
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/ThatTomPerson/spotigo?style=flat-square)](https://goreportcard.com/report/github.com/ThatTomPerson/spotigo)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/ThatTomPerson/spotigo)
+[![Release](https://img.shields.io/github/release/ThatTomPerson/spotigo.svg?style=flat-square)](https://github.com/ThatTomPerson/spotigo/releases/latest)
+
 Pure Go Spotify daemon and cli
 
 # Thanks
