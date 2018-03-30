@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"gitlab.com/ThatTomPerson/spotify-go/internal/app/spotify"
+	"github.com/ThatTomPerson/spotigo/internal/app/spotify"
 )
 
 func main() {

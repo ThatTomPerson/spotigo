@@ -12,8 +12,7 @@ import (
 	"net/http"
 	"time"
 
-	_ "gitlab.com/ThatTomPerson/spotify-go/internal/pkg/api/authentication"
-	"gitlab.com/ThatTomPerson/spotify-go/internal/pkg/api/keyexchange"
+	"github.com/ThatTomPerson/spotigo/internal/pkg/api/keyexchange"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
@@ -131,7 +130,7 @@ func (s *Spotify) Connect(ctx context.Context) error {
 
 	spew.Dump(header)
 
-	size = int(binary.BigEndian.Uint32(header))
+	size = int(binary.BigEndian.Uint32(header)) - 4
 	// 0, 1, 2,3,4,5
 	spew.Dump(size)
 
@@ -147,6 +146,25 @@ func (s *Spotify) Connect(ctx context.Context) error {
 	proto.Unmarshal(body, res)
 
 	spew.Dump(res)
+
+	fmt.Print(proto.MarshalTextString(res))
+
+	serverPubKey := dhkx.NewPublicKey(res.Challenge.LoginCryptoChallenge.DiffieHellman.Gs)
+
+	// Compute the key
+	k, _ := g.ComputeKey(serverPubKey, priv)
+
+	// Get the key in the form of []byte
+	key := k.Bytes()
+
+	spew.Dump(key)
+
+	// mac := hmac.New(sha1.New, key)
+
+	// for i := 0; i <= 6; i++ {
+
+	// }
+
 	return nil
 }
 
@@ -163,7 +181,7 @@ func (s *Spotify) findAPs(ctx context.Context) (*ApList, error) {
 	aps := &ApList{}
 
 	json.NewDecoder(resp.Body).Decode(aps)
-	spew.Dump(aps)
+
 	return aps, nil
 }
 
