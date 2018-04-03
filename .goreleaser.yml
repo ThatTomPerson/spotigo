@@ -1,0 +1,25 @@
+builds:
+  - main: cmd/spotify/main.go
+    binary: spotify
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - 386
+  - main: cmd/spotifyd/main.go
+    binary: spotifyd
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - 386
+# changelog:
+#   sort: asc
+#   filters:
+#     exclude:
+#       - '^docs:'
+#       - '^refactor'

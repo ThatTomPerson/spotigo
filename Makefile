@@ -5,7 +5,23 @@ CMDDIR ?= cmd
 
 PACKAGES = $(shell go list ./...)
 CMDS = $(wildcard $(CMDDIR)/*/main.go)
-BINS = $(patsubst $(CMDDIR)/%/main.go,$(OUTDIR)/%,$(CMDS))
+
+
+
+PLATFORMS := linux-amd64 windows-amd64 darwin-amd64 linux-arm
+
+temp = $(subst -, ,$(word 3, $(subst /, ,$@)))
+os = $(word 1, $(temp))
+arch = $(word 2, $(temp))
+
+
+outdirs := $(addprefix $(OUTDIR)/,$(PLATFORMS))
+
+BINS = $(foreach platform,$(PLATFORMS),$(patsubst $(CMDDIR)/%/main.go,$(OUTDIR)/$(platform)-%,$(CMDS)))
+
+
+
+
 
 GOPATH ?= $(HOME)/go
 GOBIN ?= $(GOPATH)/bin
@@ -27,6 +43,9 @@ SRC = $(addsuffix /*.go,$(subst $(PWD)/,,$(addprefix $(GOSRC)/,$(PACKAGES))))
 
 DERIVED = $(addsuffix /derived.gen.go,$(subst $(PWD)/,,$(addprefix $(GOSRC)/,$(PACKAGES))))
 
+# tmp:
+# 	echo $(BINS)
+
 
 all: generate vendor test $(BINS);
 
@@ -44,9 +63,9 @@ $(DEP):
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 $(BINS): $(SRC)
-	@echo "Building $@ for $(GOOS):$(GOARCH)"
+	@echo "Building $@ for $(os):$(arch)"
 	@mkdir -p $(OUTDIR)
-	@go build -race -v -o $@ $(patsubst $(OUTDIR)/%,$(CMDDIR)/%,$@)/*.go
+	@GOOS=$(os) GOARCH=$(arch) go build -o $@ $(patsubst $(OUTDIR)/$(os)-$(arch)-%,$(CMDDIR)/%,$@)/*.go
 	@file $@
 
 test: $(SRC)
@@ -65,3 +84,6 @@ internal/pkg/api/%: api/%.proto
 	@mkdir -p $@
 	protoc --go_out $@ -I api $<
 
+run:
+	go run cmd/spotifyd/*.go
+.PHONY:run
