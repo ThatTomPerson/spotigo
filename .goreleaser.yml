@@ -10,6 +10,10 @@ builds:
     goarch:
       - amd64
       - 386
+
+    ignore:
+      - goos: darwin
+        goarch: 386
   - main: cmd/spotifyd/main.go
     binary: spotifyd
     goos:
@@ -19,11 +23,35 @@ builds:
     goarch:
       - amd64
       - 386
+    ignore:
+      - goos: darwin
+        goarch: 386
+
+archive:
+  format_overrides:
+    - goos: windows
+      format: zip
+
+nfpm:
+  vendor: TTP
+  homepage: https://ttp.sh/
+  maintainer: Thomas Albrighton <tom@ttp.sh>
+
+  formats:
+    - deb
+    - rpm
+
+  license: MIT
+
 brew:
   # Reporitory to push the tap to.
   github:
     owner: ThatTomPerson
     name: homebrew-tap
+
+release:
+  draft: true
+
 
 changelog:
   sort: asc

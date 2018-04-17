@@ -3,5 +3,5 @@ clean:
 .PHONY: clean
 
 release: clean
-	goreleaser
+	goreleaser --snapshot
 .PHONY: clean
