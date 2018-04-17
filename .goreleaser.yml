@@ -1,3 +1,5 @@
+project_name: spotigo
+
 builds:
   - main: cmd/spotify/main.go
     binary: spotify
@@ -17,9 +19,15 @@ builds:
     goarch:
       - amd64
       - 386
-# changelog:
-#   sort: asc
-#   filters:
-#     exclude:
-#       - '^docs:'
-#       - '^refactor'
+brew:
+  # Reporitory to push the tap to.
+  github:
+    owner: ThatTomPerson
+    name: homebrew-tap
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^refactor'
