@@ -7,29 +7,30 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"log"
 	"math/rand"
 	"net"
 
-	"github.com/ThatTomPerson/spotigo/internal/pkg/api/keyexchange"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gogo/protobuf/proto"
 	"github.com/monnand/dhkx"
+	"github.com/sirupsen/logrus"
+	"ttp.sh/spotigo/internal/pkg/api/keyexchange"
+	"ttp.sh/spotigo/internal/pkg/shannon"
 )
 
 type Conn struct {
 	net.Conn
 	sendKey []byte
 	recvKey []byte
+
+	sendNonce  int
+	sendCipher *shannon.Shannon
+
+	recvNonce  int
+	recvCipher *shannon.Shannon
 }
 
 func (c *Conn) Write(b []byte) (int, error) {
-	b, err := c.encrypt(b)
-	if err != nil {
-		return 0, err
-	}
 
-	return c.Conn.Write(b)
 }
 
 func (c *Conn) Read(b []byte) (int, error) {
@@ -45,7 +46,7 @@ func New(c net.Conn) (net.Conn, error) {
 }
 
 func exchange(c net.Conn) (*Conn, error) {
-	log.Printf("Starting handshake\n")
+	logrus.Info("Starting handshake")
 
 	g, err := dhkx.GetGroup(1)
 	if err != nil {
@@ -53,12 +54,12 @@ func exchange(c net.Conn) (*Conn, error) {
 	}
 
 	priv, _ := g.GeneratePrivateKey(nil)
-	log.Printf("Generated private key\n")
+	logrus.Info("Generated private key")
 
 	// Get the public key from the private key.
 	pub := priv.Bytes()
 
-	spew.Dump(pub)
+	// spew.Dump(pub)
 
 	var version uint64 = 0x10800000000
 	var serverKeysKnown uint32 = 1
@@ -99,16 +100,17 @@ func exchange(c net.Conn) (*Conn, error) {
 
 	packet := bytes.Join([][]byte{header, b}, []byte{})
 
-	spew.Dump(packet)
+	// spew.Dump(packet)
 
-	spew.Dump(size)
-	log.Printf("Sending ClientHello")
+	// spew.Dump(size)
+	logrus.Info("Sending ClientHello")
 
 	n, err := c.Write(packet)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't write ClientHello: %v", err)
 	}
-	spew.Dump(n)
+	_ = n
+	// spew.Dump(n)
 
 	header = make([]byte, 4)
 
@@ -117,11 +119,9 @@ func exchange(c net.Conn) (*Conn, error) {
 		return nil, fmt.Errorf("couldn't read response header: %v", err)
 	}
 
-	spew.Dump(header)
 	// sub 4 because of the length part of the header
 	size = int(binary.BigEndian.Uint32(header)) - 4
-	// 0, 1, 2,3,4,5
-	spew.Dump(size)
+	logrus.Infof("APResponseMessage Header: %x, Size: %d", header, size)
 
 	body := make([]byte, size)
 
@@ -130,13 +130,10 @@ func exchange(c net.Conn) (*Conn, error) {
 		return nil, fmt.Errorf("couldn't read response header: %v", err)
 	}
 
-	spew.Dump(body)
 	res := &keyexchange.APResponseMessage{}
 	proto.Unmarshal(body, res)
 
-	spew.Dump(res)
-
-	fmt.Print(proto.MarshalTextString(res))
+	// fmt.Print(proto.MarshalTextString(res))
 
 	serverPubKey := dhkx.NewPublicKey(res.Challenge.LoginCryptoChallenge.DiffieHellman.Gs)
 
@@ -146,7 +143,7 @@ func exchange(c net.Conn) (*Conn, error) {
 	// Get the key in the form of []byte
 	key := k.Bytes()
 
-	spew.Dump(key)
+	// spew.Dump(key)
 	packets := serverPubKey.Bytes()
 	mac := hmac.New(sha1.New, key)
 	data := []byte{}
@@ -155,7 +152,7 @@ func exchange(c net.Conn) (*Conn, error) {
 		sum := mac.Sum([]byte{byte(i)})
 		mac.Reset()
 
-		spew.Dump(sum)
+		// spew.Dump(sum)
 		data = append(data, sum...)
 	}
 
@@ -163,10 +160,9 @@ func exchange(c net.Conn) (*Conn, error) {
 	sendKey := data[0x14:0x34]
 	recvKey := data[0x34:0x54]
 
-	spew.Dump("Keys")
-	spew.Dump(challenge)
-	spew.Dump(sendKey)
-	spew.Dump(recvKey)
+	logrus.Debugf("challenge: %x", challenge)
+	logrus.Debugf("sendKey: %x", sendKey)
+	logrus.Debugf("recvKey: %x", recvKey)
 
 	clientResponse := &keyexchange.ClientResponsePlaintext{
 		LoginCryptoResponse: &keyexchange.LoginCryptoResponseUnion{
@@ -188,12 +184,15 @@ func exchange(c net.Conn) (*Conn, error) {
 
 	packet = bytes.Join([][]byte{header, b}, []byte{})
 
+	logrus.Infof("Sending ClientResponsePlaintext")
 	c.Write(packet)
 
 	return &Conn{
 		Conn:    c,
 		sendKey: sendKey,
 		recvKey: recvKey,
+		// serverNonce: res.serverNonce,
+		// clientNonce: res.clientNonce,
 	}, errors.New("not implimented")
 }
 

@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net"
 	"net/http"
 	"time"
 
-	"github.com/ThatTomPerson/spotigo/internal/pkg/dhet"
+	"github.com/sirupsen/logrus"
+	"ttp.sh/spotigo/internal/pkg/dhet"
 )
 
 type ApList struct {
@@ -25,42 +25,56 @@ func (l *ApList) Rand() string {
 }
 
 type Spotify struct {
+	conn net.Conn
 }
 
 func New() *Spotify {
 	return &Spotify{}
 }
 
-func (s *Spotify) Connect(ctx context.Context) error {
-	log.Printf("Looking for access points\n")
-
+func (s *Spotify) dialAP(ctx context.Context) (net.Conn, error) {
 	aps, err := s.findAPs(ctx)
 	if err != nil {
-		return fmt.Errorf("couldn't find Spotify APs: %v", err)
+		return nil, fmt.Errorf("couldn't find Spotify APs: %v", err)
 	}
 
 	ap := aps.Rand()
 
 	c, err := net.Dial("tcp", ap)
 	if err != nil {
-		return fmt.Errorf("couldn't connect to Spotify AP %s: %v", ap, err)
+		return nil, fmt.Errorf("couldn't connect to Spotify AP %s: %v", ap, err)
 	}
-	log.Printf("Connected to %s\n", ap)
+	logrus.Infof("Connected to %s", ap)
 
 	c, err = dhet.New(c)
+
 	if err != nil {
-		return fmt.Errorf("couldn't excahnge keys with spotify: %v", err)
+		return nil, fmt.Errorf("couldn't excahnge keys with spotify: %v", err)
 	}
 
+	return c, nil
+}
+
+func (s *Spotify) Connect(ctx context.Context) error {
+	logrus.Info("Looking for access points")
+	c, err := s.dialAP(ctx)
+	if err != nil {
+		return fmt.Errorf("couldn't find Spotify APs: %v", err)
+	}
+
+	s.conn = c
 	return nil
 }
 
 func (s *Spotify) findAPs(ctx context.Context) (*ApList, error) {
 	resp, err := http.Get("https://apresolve.spotify.com")
 	if err != nil {
+		logrus.Warnf("http.Get https://apresolve.spotify.com : %v", err)
 		// try again with a tcp message to vv
-		// resp, err = http.Get("http://ap.spotify.com")
-		return nil, err
+		resp, err = http.Get("http://ap.spotify.com")
+		if err != nil {
+			return nil, err
+		}
 	}
 	// close the body here so we don't forget later
 	defer resp.Body.Close()

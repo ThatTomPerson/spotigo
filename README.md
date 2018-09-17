@@ -6,19 +6,6 @@ Pure Go Spotify daemon and cli
 
 Thanks to Paul Liétar (https://github.com/plietar) for his doumentation and rust implimentation of the Spotify protocol in https://github.com/plietar/librespot, couldn't have even started on this with out your insight
 
-# Other Projects -- TODO
-
-### macOS applet
-
-github.com/ThatTomPerson/spotimac
-
-### Windows System tray Client
-
-github.com/ThatTomPerson/winspot
-
-### Linux Client
-
-github.com/ThatTomPerson/spotix
 
 # Disclaimer
 
