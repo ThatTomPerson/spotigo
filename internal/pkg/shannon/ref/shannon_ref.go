@@ -1018,7 +1018,7 @@ type rsize_t __darwin_size_t
 type errno_t int32
 type ssize_t __darwin_ssize_t
 
-// sbox1 - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:58
+// sbox1 - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:58
 /* $Id: $ */ //
 /* Shannon: Shannon stream cipher and MAC -- reference implementation */ //
 /*
@@ -1053,14 +1053,14 @@ func sbox1(w uint32_t) uint32_t {
 	return uint32_t(w)
 }
 
-// sbox2 - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:66
+// sbox2 - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:66
 func sbox2(w uint32_t) uint32_t {
 	w ^= w<<uint64(int32(7)) | w>>uint64(int32(32)-int32(7)) | (w<<uint64(int32(22)) | w>>uint64(int32(32)-int32(22)))
 	w ^= w<<uint64(int32(5)) | w>>uint64(int32(32)-int32(5)) | (w<<uint64(int32(19)) | w>>uint64(int32(32)-int32(19)))
 	return uint32_t(w)
 }
 
-// cycle - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:76
+// cycle - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:76
 /* cycle the contents of the register and calculate output word in c->sbuf.
  */ //
 /* nonlinear feedback function */ //
@@ -1080,7 +1080,7 @@ func cycle(c []shn_ctx) {
 	c[0].sbuf = t ^ c[0].R[int32(8)] ^ c[0].R[int32(12)]
 }
 
-// crcfunc - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:107
+// crcfunc - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:107
 /* The Shannon MAC function is modelled after the concepts of Phelix and SHA.
  * Basically, words to be accumulated in the MAC are incorporated in two
  * different ways:
@@ -1105,7 +1105,7 @@ func crcfunc(c []shn_ctx, i uint32_t) {
 	c[0].CRC[int32(16)-int32(1)] = t
 }
 
-// macfunc - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:122
+// macfunc - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:122
 /* Normal MAC word processing: do both stream register and CRC.
  */ //
 //
@@ -1114,7 +1114,7 @@ func macfunc(c []shn_ctx, i uint32_t) {
 	c[0].R[int32(13)] ^= i
 }
 
-// shn_initstate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:132
+// shn_initstate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:132
 /* initialise to known state
  */ //
 /* Register initialised to Fibonacci numbers; Counter zeroed. */ //
@@ -1129,7 +1129,7 @@ func shn_initstate(c []shn_ctx) {
 	c[0].konst = uint32_t(int32(1771488570))
 }
 
-// shn_savestate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:147
+// shn_savestate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:147
 /* Save the current register state
  */ //
 //
@@ -1140,7 +1140,7 @@ func shn_savestate(c []shn_ctx) {
 	}
 }
 
-// shn_reloadstate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:158
+// shn_reloadstate - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:158
 /* initialise to previously saved register state
  */ //
 //
@@ -1151,7 +1151,7 @@ func shn_reloadstate(c []shn_ctx) {
 	}
 }
 
-// shn_genkonst - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:169
+// shn_genkonst - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:169
 /* Initialise "konst"
  */ //
 //
@@ -1159,7 +1159,7 @@ func shn_genkonst(c []shn_ctx) {
 	c[0].konst = c[0].R[int32(0)]
 }
 
-// shn_diffuse - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:181
+// shn_diffuse - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:181
 /* Load key material into the register
  */ //
 /* extra nonlinear diffusion of register for key and MAC */ //
@@ -1171,7 +1171,7 @@ func shn_diffuse(c []shn_ctx) {
 	}
 }
 
-// shn_loadkey - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:194
+// shn_loadkey - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:194
 /* Common actions for loading key material
  * Allow non-word-multiple key and nonce material.
  * Note also initializes the CRC register as a side effect.
@@ -1222,7 +1222,7 @@ func shn_loadkey(c []shn_ctx, key []uint8_t, keylen int32) {
 	}
 }
 
-// shn_key - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:238
+// shn_key - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:238
 /* Published "key" interface
  */ //
 /* in case we proceed to stream generation */ //
@@ -1235,7 +1235,7 @@ func shn_key(c []shn_ctx, key []uint8_t, keylen int32) {
 	c[0].nbuf = int32(0)
 }
 
-// shn_nonce - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:250
+// shn_nonce - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:250
 /* Published "IV" interface
  */ //
 //
@@ -1247,7 +1247,7 @@ func shn_nonce(c []shn_ctx, nonce []uint8_t, noncelen int32) {
 	c[0].nbuf = int32(0)
 }
 
-// shn_stream - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:263
+// shn_stream - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:263
 /* XOR pseudo-random bytes into buffer
  * Note: doesn't play well with MAC functions.
  */ //
@@ -1303,7 +1303,7 @@ func shn_stream(c []shn_ctx, buf []uint8_t, nbytes int32) {
 	}
 }
 
-// shn_maconly - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:302
+// shn_maconly - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:302
 /* accumulate words into MAC without encryption
  * Note that plaintext is accumulated for MAC.
  */ //
@@ -1361,7 +1361,7 @@ func shn_maconly(c []shn_ctx, buf []uint8_t, nbytes int32) {
 	}
 }
 
-// shn_encrypt - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:346
+// shn_encrypt - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:346
 /* Combined MAC and encryption.
  * Note that plaintext is accumulated for MAC.
  */ //
@@ -1416,7 +1416,7 @@ func shn_encrypt(c []shn_ctx, buf []uint8_t, nbytes int32) {
 	}
 }
 
-// shn_decrypt - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:398
+// shn_decrypt - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:398
 /* Combined MAC and decryption.
  * Note that plaintext is accumulated for MAC.
  */ //
@@ -1470,7 +1470,7 @@ func shn_decrypt(c []shn_ctx, buf []uint8_t, nbytes int32) {
 	}
 }
 
-// shn_finish - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/internal/pkg/shannon/ShannonRef.c:450
+// shn_finish - transpiled function from  /Users/thomasalbrighton/Projects/spotigo/docs/shannon/ShannonRef.c:450
 /* Having accumulated a MAC, finish processing and return it.
  * Note that any unprocessed bytes are treated as if
  * they were encrypted zero bytes, so plaintext (zero) is accumulated.
@@ -1515,4 +1515,6 @@ func shn_finish(c []shn_ctx, buf []uint8_t, nbytes int32) {
 			break
 		}
 	}
+}
+func init() {
 }

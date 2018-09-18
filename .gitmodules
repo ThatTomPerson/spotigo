@@ -1,0 +1,3 @@
+[submodule "docs/shannon"]
+	path = docs/shannon
+	url = git@github.com:timniederhausen/shannon.git
