@@ -2,6 +2,7 @@ package fast
 
 //go:generate bash -c "rm shannon_fast.go || true"
 //go:generate bash -c "c2go transpile -V -o ./shannon_fast.go -p fast ../../../../docs/shannon/{Shannon.h,ShannonFast.c,ShannonInternal.h}"
+import "encoding/binary"
 
 type Shannon struct {
 	ctx []shn_ctx
@@ -62,6 +63,16 @@ func (c *Shannon) Decrypt(packet []byte) []byte {
 	}
 
 	return packet
+}
+
+func (c *Shannon) Nonce(nonce int) {
+	_b := []byte{}
+	binary.LittleEndian.PutUint32(_b, uint32(nonce))
+	b := []uint8_t{}
+	for _, v := range _b {
+		b = append(b, uint8_t(v))
+	}
+	shn_nonce(c.ctx, b, int32(len(b)))
 }
 
 func (c *Shannon) Finish(packet []byte) []byte {

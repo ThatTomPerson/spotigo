@@ -6,6 +6,7 @@ type Shannon interface {
 	Encrypt([]byte) []byte
 	Decrypt([]byte) []byte
 	Finish([]byte) []byte
+	Nonce(int)
 }
 
 func New(key []byte) Shannon {

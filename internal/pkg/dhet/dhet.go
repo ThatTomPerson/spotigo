@@ -23,14 +23,17 @@ type Conn struct {
 	recvKey []byte
 
 	sendNonce  int
-	sendCipher *shannon.Shannon
+	sendCipher shannon.Shannon
 
 	recvNonce  int
-	recvCipher *shannon.Shannon
+	recvCipher shannon.Shannon
 }
 
 func (c *Conn) Write(b []byte) (int, error) {
-
+	c.sendCipher.Nonce(sendNonce)
+	b = c.sendCipher.Encrypt(b)
+	c.recvNonce++
+	return c.Conn.Write(b)
 }
 
 func (c *Conn) Read(b []byte) (int, error) {
